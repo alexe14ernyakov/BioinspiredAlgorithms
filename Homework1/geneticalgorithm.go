@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	tournamentSize = 3
-	popSize        = 100
-	generations    = 100
-	crossProb      = 0.7
-	mutProb        = 0.1
-	xMin           = 2.0
-	xMax           = 4.0
+	tournamentSize  = 3
+	popSize         = 100
+	crossProb       = 0.7
+	mutProb         = 0.1
+	xMin            = 2.0
+	xMax            = 4.0
+	stagnationLimit = 20
 )
 
 func randChoice[T any](arr []T) T {
@@ -76,12 +76,15 @@ func mutate(ind float64) float64 {
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	population := genPopulation()
+	startTime := time.Now()
 
+	population := genPopulation()
 	bestIndividual := population[0]
 	maxExtremum := fitness(bestIndividual)
+	stagnationCount := 0
+	generation := 0
 
-	for gen := 0; gen < generations; gen++ {
+	for stagnationCount < stagnationLimit {
 		newPopulation := genPopulation()
 
 		for i := range newPopulation {
@@ -93,14 +96,27 @@ func main() {
 		}
 		population = newPopulation
 
+		improved := false
 		for _, ind := range population {
 			value := fitness(ind)
 			if value > maxExtremum {
 				bestIndividual = ind
 				maxExtremum = value
+				improved = true
 			}
 		}
-		fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", gen, bestIndividual, maxExtremum)
+
+		if improved {
+			stagnationCount = 0
+		} else {
+			stagnationCount++
+		}
+
+		fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", generation, bestIndividual, maxExtremum)
+		generation++
 	}
+
+	workTime := time.Since(startTime)
 	fmt.Printf("Лучшее решение, найденное алгоритмом: f(%.10f) = %.10f\n", bestIndividual, maxExtremum)
+	fmt.Printf("Поколений потребовалось: %d\nЗатраченное время: %d мс", generation, workTime.Milliseconds())
 }
