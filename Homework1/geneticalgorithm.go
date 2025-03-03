@@ -59,7 +59,6 @@ func crossingover(p1, p2 float64) float64 {
 	return p1
 }
 
-// Пока такой, можно написать лучше
 func mutate(ind float64) float64 {
 	if rand.Float64() < mutProb {
 		delta := (rand.Float64() - 0.5) * 0.1
@@ -77,7 +76,7 @@ func mutate(ind float64) float64 {
 func main() {
 	for range 10 {
 		rand.Seed(time.Now().UnixNano())
-		//startTime := time.Now()
+		startTime := time.Now()
 
 		population := genPopulation()
 		bestIndividual := population[0]
@@ -113,15 +112,12 @@ func main() {
 				stagnationCount++
 			}
 
-			//fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", generation, bestIndividual, maxExtremum)
+			fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", generation, bestIndividual, maxExtremum)
 			generation++
 		}
 
-		//workTime := time.Since(startTime)
-		//fmt.Printf("Лучшее решение, найденное алгоритмом: f(%.10f) = %.10f\n", bestIndividual, maxExtremum)
-		//fmt.Printf("%d\n", workTime.Milliseconds())
-		//fmt.Printf("%d\n", generation)
-		fmt.Printf("%.10f\n", bestIndividual)
+		workTime := time.Since(startTime)
+		fmt.Printf("Лучшее решение, найденное алгоритмом: f(%.10f) = %.10f\n", bestIndividual, maxExtremum)
+		fmt.Printf("Затраченное время: %d мс\n", workTime.Milliseconds())
 	}
-
 }
