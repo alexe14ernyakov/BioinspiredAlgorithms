@@ -9,7 +9,7 @@ import (
 
 const (
 	tournamentSize  = 3
-	popSize         = 200
+	popSize         = 70
 	crossProb       = 0.7
 	mutProb         = 0.1
 	xMin            = 2.0
@@ -74,50 +74,48 @@ func mutate(ind float64) float64 {
 }
 
 func main() {
-	for range 10 {
-		rand.Seed(time.Now().UnixNano())
-		startTime := time.Now()
+	rand.Seed(time.Now().UnixNano())
+	startTime := time.Now()
 
-		population := genPopulation()
-		bestIndividual := population[0]
-		maxExtremum := fitness(bestIndividual)
-		stagnationCount := 0
-		generation := 0
+	population := genPopulation()
+	bestIndividual := population[0]
+	maxExtremum := fitness(bestIndividual)
+	stagnationCount := 0
+	generation := 0
 
-		for stagnationCount < stagnationLimit {
-			newPopulation := genPopulation()
+	for stagnationCount < stagnationLimit {
+		newPopulation := genPopulation()
 
-			for i := range newPopulation {
-				p1 := tournamentSelection(population)
-				p2 := tournamentSelection(population)
-				child := crossingover(p1, p2)
-				child = mutate(child)
-				newPopulation[i] = child
+		for i := range newPopulation {
+			p1 := tournamentSelection(population)
+			p2 := tournamentSelection(population)
+			child := crossingover(p1, p2)
+			child = mutate(child)
+			newPopulation[i] = child
+		}
+		population = newPopulation
+
+		improved := false
+		for _, ind := range population {
+			value := fitness(ind)
+			if value > maxExtremum {
+				bestIndividual = ind
+				maxExtremum = value
+				improved = true
 			}
-			population = newPopulation
-
-			improved := false
-			for _, ind := range population {
-				value := fitness(ind)
-				if value > maxExtremum {
-					bestIndividual = ind
-					maxExtremum = value
-					improved = true
-				}
-			}
-
-			if improved {
-				stagnationCount = 0
-			} else {
-				stagnationCount++
-			}
-
-			fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", generation, bestIndividual, maxExtremum)
-			generation++
 		}
 
-		workTime := time.Since(startTime)
-		fmt.Printf("Лучшее решение, найденное алгоритмом: f(%.10f) = %.10f\n", bestIndividual, maxExtremum)
-		fmt.Printf("Затраченное время: %d мс\n", workTime.Milliseconds())
+		if improved {
+			stagnationCount = 0
+		} else {
+			stagnationCount++
+		}
+
+		fmt.Printf("Поколение %d: x = %.10f; f(x) = %.10f\n", generation, bestIndividual, maxExtremum)
+		generation++
 	}
+
+	workTime := time.Since(startTime)
+	fmt.Printf("Лучшее найденное решение: а(%.10f) = %.10f\n", bestIndividual, maxExtremum)
+	fmt.Printf("Время работы алгоритма: %d мс\n", workTime.Microseconds())
 }
