@@ -9,7 +9,7 @@ import (
 
 const (
 	dim        = 2     // Размерность задачи
-	numFish    = 30    // Размер популяции
+	numFish    = 50    // Размер популяции
 	iterations = 100   // Количество итераций
 	stepInd    = 0.1   // Индивидуальный шаг
 	stepVol    = 0.01  // Волитивное движение
@@ -165,7 +165,13 @@ func fishSchoolSearch() ([]float64, float64) {
 }
 
 func main() {
+	startTime := time.Now()
 	bestPos, bestVal := fishSchoolSearch()
+	endTime := time.Now()
+
 	fmt.Println("\nBest position:", bestPos)
 	fmt.Println("Function value:", bestVal)
+
+	elapsedTime := endTime.Sub(startTime)
+	fmt.Println("Execution time:", elapsedTime)
 }
