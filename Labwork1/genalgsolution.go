@@ -26,7 +26,7 @@ type KnapsackProblem struct {
 
 type Chromosome struct {
 	Genes   []bool
-	Fitness int // 0 = идеальное решение, >0 = отклонение от цели
+	Fitness int
 	Weight  int
 }
 
